@@ -12,7 +12,11 @@
 #include "simAVRHeader.h"
 #endif
 
+//global variables
 enum c_states {c_smstart, c_init, c_wait, c_waitplus, c_plus, c_waitminus,c_minus, c_reset} c_state;
+
+unsigned char tempC = 0x00;
+
 
 void  c_counter() {
 	unsigned char tempA0 = ~PINA & 0x01; 
@@ -99,32 +103,24 @@ void  c_counter() {
 		case c_smstart:
 			break;
 		case c_init:
-			PORTC = 0x07;
 			break;
 		case c_wait:
 			break;
 		case c_waitplus:
 			break;
 		case c_plus:
-			if(PORTC < 0x09) {
-				PORTC = PORTC +  0x01;
-			}
-			else {
-				PORTC = 0x09;
+			if(tempC < 0x09) {
+				tempC = tempC + 1;
 			}
 			break;
 		case c_waitminus:
 			break;
 		case c_minus:
-			if(PORTC > 0 ) {
-				PORTC = PORTC - 0x01;
+			if(tempC > 0 ) {
+				tempC = tempC - 1;
 			}
-			else {
-				PORTC = 0x00;
-			}
-			break;
 		case c_reset:
-			PORTC = 0x00;
+			tempC = 0;
 			break;
 		default:
 			break;
@@ -143,12 +139,13 @@ int main() {
   DDRA = 0x00; PORTA = 0xFF;
   DDRC = 0x00; PORTC = 0x00;
 
-
+  //start
   c_state = c_smstart;
-
+  tempC = 0x07;
   while(1) {
  
   	c_counter();
+	PORTC = tempC;
   	
   }
 
