@@ -13,9 +13,7 @@
 #endif
 
 //global variables
-enum c_states {c_smstart, c_init, c_wait, c_waitplus, c_plus, c_waitminus,c_minus, c_reset} c_state;
-
-unsigned char tempC = 0x00;
+enum c_states {c_smstart, c_init, c_wait, c_waitplus, c_plus, c_waitminus,c_minus, c_waitreset, c_reset} c_state;
 
 
 void  c_counter() {
@@ -28,7 +26,7 @@ void  c_counter() {
 			c_state = c_init;
 			break;
 		case c_init:
-			break;
+			c_state = c_wait;
 		case c_wait:
 			if(tempA0 && !tempA1) {
 				c_state = c_waitplus;
@@ -37,7 +35,7 @@ void  c_counter() {
 				c_state = c_waitminus;
 			}
 			else if(tempA0 && tempA1) {
-				c_state = c_reset;
+				c_state = c_waitreset;
 			}
 			else {
 				c_state = c_wait;
@@ -51,47 +49,34 @@ void  c_counter() {
 			else if(!tempA0 && !tempA1){
 				c_state = c_plus;
 			}
-			else if (tempA0 && tempA1) {
-				c_state = c_reset;
-			}
-			else if(!tempA0 && tempA1) {
-				c_state = c_waitminus;
-			}
-			else {
-				c_state = c_wait;
-			}
 			break;
 		case c_plus:
 			c_state = c_wait;
 			break;
 		case c_waitminus:
 			if(!tempA0 && tempA1) {
-                                //holding down A1
-                                c_state = c_waitminus;
-                        }
-                        else if(!tempA0 && !tempA1){
-                                c_state = c_minus;
-                        }
-                        else if (tempA0 && tempA1) {
-                                c_state = c_reset;
-                        }
-                        else if(!tempA0 && tempA1) {
-                                c_state = c_waitplus;
-                        }
-                        else {
-                                c_state = c_wait;
-                        }
-                        break;
+                 //holding down A1
+                    c_state = c_waitminus;
+            }
+            else if(!tempA0 && !tempA1){
+                    c_state = c_minus;
+            }
+    
+            }
+            break;
 		case c_minus:
 			c_state = c_wait;
 			break;
+		case c_waitreset:
+			if (tempA0 && tempA1) {
+				c_state = c_waitreset;
+			}
+			else if (tempA0 && tempA1) {
+				c_state = c_reset;
+			}
+			break;
 		case c_reset:
-			if(tempA0 && tempA1) {
-			 	c_state = c_reset;
-			}
-			else {
-				c_state = c_wait;
-			}
+			c_state = c_wait;
 			break;
 		default:
 			break;
@@ -103,24 +88,25 @@ void  c_counter() {
 		case c_smstart:
 			break;
 		case c_init:
+			PORTC = 7;
 			break;
 		case c_wait:
 			break;
 		case c_waitplus:
 			break;
 		case c_plus:
-			if(tempC < 0x09) {
-				tempC = tempC + 1;
+			if(PORTC < 9) {
+				PORTC = PORTC + 1;
 			}
 			break;
 		case c_waitminus:
 			break;
 		case c_minus:
-			if(tempC > 0 ) {
-				tempC = tempC - 1;
+			if(PORTC > 0 ) {
+				PORTC = PORTC - 1;
 			}
 		case c_reset:
-			tempC = 0;
+			PORTC = 0;
 			break;
 		default:
 			break;
@@ -141,11 +127,9 @@ int main() {
 
   //start
   c_state = c_smstart;
-  tempC = 0x07;
+  
   while(1) {
- 
-  	c_counter();
-	PORTC = tempC;
+  	c_counter();	
   	
   }
 
