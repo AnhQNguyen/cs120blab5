@@ -14,9 +14,9 @@
 
 enum c_states {c_smstart, c_init, c_wait, c_waitplus, c_plus, c_waitminus,c_minus, c_reset} c_state;
 
-void c_counter() {
-	unsigned char tempA0 = PINA & 0x01; 
-	unsigned char tempA1 = PINA & 0x02;
+void  c_counter() {
+	unsigned char tempA0 = ~PINA & 0x01; 
+	unsigned char tempA1 = ~PINA & 0x02;
 
 	//state transitions
 	switch(c_state)  {
@@ -107,7 +107,7 @@ void c_counter() {
 			break;
 		case c_plus:
 			if(PORTC < 0x09) {
-				PORTC = PORTC + 0x01;
+				PORTC = PORTC +  0x01;
 			}
 			else {
 				PORTC = 0x09;
@@ -143,12 +143,13 @@ int main() {
   DDRA = 0x00; PORTA = 0xFF;
   DDRC = 0x00; PORTC = 0x00;
 
+
   c_state = c_smstart;
 
   while(1) {
-  
+ 
   	c_counter();
-  
+  	
   }
 
   return 1;
