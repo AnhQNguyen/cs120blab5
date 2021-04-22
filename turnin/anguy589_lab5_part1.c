@@ -48,7 +48,7 @@ int main(void) {
      else if(tmpA >= 0x0A && tmpA <= 0x0C) {
        tmpC = 0x3E; //C5C4C3C2C1
      }
-     else if(tmpA >= 0x0D && tmpA <= 0x0F) {
+     else if(tmpA >= 0x0D && tmpA < 0x0F) {
        tmpC = 0x3F; //C5C4C3C2C1C0
      }
      else {
