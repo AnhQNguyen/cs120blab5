@@ -135,7 +135,7 @@ int main() {
 
   //initialize ports
   DDRA = 0x00; PORTA = 0xFF;
-  DDRC = 0x00; PORTC = 0x00;
+  DDRC = 0xFF; PORTC = 0x00;
 
   //start
   c_state = c_smstart;
