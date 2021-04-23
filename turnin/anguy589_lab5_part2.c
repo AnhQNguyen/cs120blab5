@@ -49,6 +49,11 @@ void  c_counter() {
 			else if(!tempA0 && !tempA1){
 				c_state = c_plus;
 			}
+			else {
+				c_state = c_wait;
+			}
+
+
 			break;
 		case c_plus:
 			c_state = c_wait;
@@ -61,6 +66,9 @@ void  c_counter() {
 	            	else if(!tempA0 && !tempA1){
                     		c_state = c_minus;
            		 }
+			else {
+				c_state = c_wait;
+			}
     
            
            		 break;
@@ -71,8 +79,11 @@ void  c_counter() {
 			if (tempA0 && tempA1) {
 				c_state = c_waitreset;
 			}
-			else if (tempA0 && tempA1) {
+			else if (!tempA0 && !tempA1) {
 				c_state = c_reset;
+			}
+			else {
+				c_state = c_wait;
 			}
 			break;
 		case c_reset:
