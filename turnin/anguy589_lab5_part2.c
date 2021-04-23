@@ -55,15 +55,15 @@ void  c_counter() {
 			break;
 		case c_waitminus:
 			if(!tempA0 && tempA1) {
-                 //holding down A1
-                    c_state = c_waitminus;
-            }
-            else if(!tempA0 && !tempA1){
-                    c_state = c_minus;
-            }
+                	    //holding down A1
+                	    c_state = c_waitminus;
+        		 }
+	            	else if(!tempA0 && !tempA1){
+                    		c_state = c_minus;
+           		 }
     
-            }
-            break;
+           
+           		 break;
 		case c_minus:
 			c_state = c_wait;
 			break;
@@ -105,6 +105,9 @@ void  c_counter() {
 			if(PORTC > 0 ) {
 				PORTC = PORTC - 1;
 			}
+			break;
+		case c_waitreset:
+			break;
 		case c_reset:
 			PORTC = 0;
 			break;
