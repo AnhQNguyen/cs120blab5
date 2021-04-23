@@ -42,12 +42,11 @@ void  c_counter() {
 			}
 			break;
 		case c_waitplus:
-			if(tempA0 && !tempA1) {
-				//holding down A0
-				c_state = c_waitplus;
-			}
-			else if(!tempA0 && !tempA1){
+			if(!tempA0) {
 				c_state = c_plus;
+			}
+			else if(tempA0) {
+				c_state = c_waitplus;
 			}
 			else {
 				c_state = c_wait;
@@ -59,12 +58,11 @@ void  c_counter() {
 			c_state = c_wait;
 			break;
 		case c_waitminus:
-			if(!tempA0 && tempA1) {
-                	    //holding down A1
-                	    c_state = c_waitminus;
+			if(!tempA1) {
+                	    c_state = c_minus;
         		 }
-	            	else if(!tempA0 && !tempA1){
-                    		c_state = c_minus;
+	            	else if(tempA1){
+                    		c_state = c_waitminus;
            		 }
 			else {
 				c_state = c_wait;
