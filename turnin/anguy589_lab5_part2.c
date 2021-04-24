@@ -77,6 +77,17 @@ void c_counter() {
 				state = waitminus;
 			}
 			break;
+		case waitminus:
+			if(!dec) {
+				state = wait;
+			}
+			else if(inc && dec) {
+				state = reset;
+			}
+			else {
+				state = waitminus;
+			}
+			break;
 		case reset:
 			if(inc && dec) {
 				state = reset;
@@ -132,7 +143,7 @@ int main(void) {
   //initialize ports
   DDRA = 0x00; PORTA = 0xFF;
   DDRC = 0xFF; PORTC = 0x00;
-  DDRC = 0x00; PORTB = 0xFF;
+  DDRB = 0x00; PORTB = 0xFF;
 
   state = smstart;
   PORTC = 0x07;
