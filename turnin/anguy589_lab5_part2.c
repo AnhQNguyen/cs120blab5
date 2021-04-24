@@ -102,7 +102,7 @@ void c_counter() {
 			break;
 		case plus:
 			if(PORTC < 0x09) {
-				PORTC = PORTC + 0x01;
+				PORTC++;
 			}
 			
 			break;
@@ -110,7 +110,7 @@ void c_counter() {
 			break;
 		case minus:
 			if(PORTC > 0x00) {
-				PORTC = PORTC - 0x01;
+				PORTC--;
 			}
 			break;
 		case waitminus:
