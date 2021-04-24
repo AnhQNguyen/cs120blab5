@@ -7,143 +7,136 @@
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.*/
 
+
 #include <avr/io.h>
 #ifdef _SIMULATE_
 #include "simAVRHeader.h"
 #endif
 
-//global variables
-enum c_states {c_smstart, c_init, c_wait, c_waitplus, c_plus, c_waitminus,c_minus, c_waitreset, c_reset} c_state;
+enum c_states {smstart, init, wait, plus, minus, waitplus, waitminus, reset} state;
+unsigned char inc = 0x00;
+unsigned char dec = 0x00;
 
-
-void  c_counter() {
-	unsigned char tempA0 = ~PINA & 0x01; 
-	unsigned char tempA1 = ~PINA & 0x02;
+void c_counter() {
+	inc = ~PINA & 0x01; //A0
+	dec = ~PINA & 0x02; //A1
 
 	//state transitions
-	switch(c_state)  {
-		case c_smstart:
-			c_state = c_init;
+	switch(state) {
+		case smstart:
+			state = init; 
 			break;
-		case c_init:
-			c_state = c_wait;
-		case c_wait:
-			if(tempA0 && !tempA1) {
-				c_state = c_waitplus;
+		case init:
+			state = wait; 
+			break;
+		case wait:
+			if(inc) {
+				state = plus;
 			}
-			else if(!tempA0 && tempA1){
-				c_state = c_waitminus;
+			else if(dec) {
+				state = minus;
 			}
-			else if(tempA0 && tempA1) {
-				c_state = c_waitreset;
+			else if(inc && dec) {
+				state = reset;
+			
 			}
 			else {
-				c_state = c_wait;
+				state = wait;
 			}
 			break;
-		case c_waitplus:
-			if(!tempA0) {
-				c_state = c_plus;
+		case plus:
+			if(!inc) {
+				state = wait;
 			}
-			else if(tempA0) {
-				c_state = c_waitplus;
+			else if(inc && dec) {
+				state = reset;
 			}
 			else {
-				c_state = c_wait;
+				state = waitplus;
 			}
-
-
 			break;
-		case c_plus:
-			c_state = c_wait;
-			break;
-		case c_waitminus:
-			if(!tempA1) {
-                	    c_state = c_minus;
-        		 }
-	            	else if(tempA1){
-                    		c_state = c_waitminus;
-           		 }
-			else {
-				c_state = c_wait;
+		case waitplus:
+			if(!inc) {
+				state = wait;
 			}
-    
-           
-           		 break;
-		case c_minus:
-			c_state = c_wait;
-			break;
-		case c_waitreset:
-			if (tempA0 && tempA1) {
-				c_state = c_waitreset;
-			}
-			else if (!tempA0 && !tempA1) {
-				c_state = c_reset;
+			else if(inc && dec) {
+				state = reset;
 			}
 			else {
-				c_state = c_wait;
+				state = waitplus;
 			}
 			break;
-		case c_reset:
-			c_state = c_wait;
+		case minus:
+			if(!dec){
+				state = wait;
+			}
+			else if(inc && dec) {
+				state = reset;
+			}
+			else {
+				state = waitminus;
+			}
+			break;
+		case reset:
+			state = wait;
 			break;
 		default:
 			break;
-	
+
 	}
 
 	//state actions
-	switch(c_state) {
-		case c_smstart:
+	switch(state) {
+		case smstart:
 			break;
-		case c_init:
-			PORTC = 7;
+		case init:
+			PORTC = 0x07;
 			break;
-		case c_wait:
+		case wait:
 			break;
-		case c_waitplus:
-			break;
-		case c_plus:
-			if(PORTC < 9) {
+		case plus:
+			if(PORTC < 0x09) {
 				PORTC = PORTC + 1;
 			}
 			break;
-		case c_waitminus:
+		case waitplus:
 			break;
-		case c_minus:
-			if(PORTC > 0 ) {
+		case minus:
+			if(PORTC > 0x00) {
 				PORTC = PORTC - 1;
 			}
 			break;
-		case c_waitreset:
+		case waitminus:
 			break;
-		case c_reset:
-			PORTC = 0;
+		case reset:
+			PORTC = 0x00;
 			break;
 		default:
 			break;
-	
-	
-	
-	
 	}
+
+
 
 
 }
 
-int main() {
 
+int main(void) {
   //initialize ports
   DDRA = 0x00; PORTA = 0xFF;
   DDRC = 0xFF; PORTC = 0x00;
 
-  //start
-  c_state = c_smstart;
-  
+  state = smstart;
+  PORTC = 0x07;
+
   while(1) {
-  	c_counter();	
-  	
-  }
+  	c_counter();
+  
+  }  
 
   return 1;
+
+
+
+
 }
