@@ -30,10 +30,10 @@ void c_counter() {
 			state = wait; 
 			break;
 		case wait:
-			if(inc) {
+			if(inc && !dec) {
 				state = plus;
 			}
-			else if(dec) {
+			else if(dec && !inc) {
 				state = minus;
 			}
 			else if(inc && dec) {
@@ -78,9 +78,15 @@ void c_counter() {
 			}
 			break;
 		case reset:
-			state = wait;
+			if(inc && dec) {
+				state = reset;
+			}
+			else {
+				state = wait;
+			}
 			break;
 		default:
+			state = smstart;
 			break;
 
 	}
@@ -96,14 +102,15 @@ void c_counter() {
 			break;
 		case plus:
 			if(PORTC < 0x09) {
-				PORTC = PORTC + 1;
+				PORTC = PORTC + 0x01;
 			}
+			
 			break;
 		case waitplus:
 			break;
 		case minus:
 			if(PORTC > 0x00) {
-				PORTC = PORTC - 1;
+				PORTC = PORTC - 0x01;
 			}
 			break;
 		case waitminus:
@@ -125,9 +132,13 @@ int main(void) {
   //initialize ports
   DDRA = 0x00; PORTA = 0xFF;
   DDRC = 0xFF; PORTC = 0x00;
+  DDRC = 0x00; PORTB = 0xFF;
 
   state = smstart;
   PORTC = 0x07;
+	
+  //testing
+  PORTB = state;
 
   while(1) {
   	c_counter();
